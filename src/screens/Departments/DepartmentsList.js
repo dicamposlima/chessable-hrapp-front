@@ -55,16 +55,15 @@ const DepartmentsList = props => {
             Departments.delete(idDepartmentDelete)
                 .then((result) => {
                     setSearchingData(false)
-                    setSuccess(""+result.data.success)
+                    setSuccess(""+result.data.messages)
                     list()
                 })
                 .catch((error) => {
                     setSearchingData(false)
                     if(error.hasOwnProperty("response")){
-                        setError(""+error)
+                        setError(""+error.response.data.messages || ""+error)
                     }
                 });
-            
         }
     };
 
@@ -75,14 +74,14 @@ const DepartmentsList = props => {
         setError("")
         Departments.list()
         .then((result) => {
-            setDepartments(result.data.departments)
+            setDepartments(result.data.departments || [])
             setSearchingData(false)
         })
         .catch((error) => {
             setSearchingData(false)
             if(error.hasOwnProperty("response")){
                 if(!error.response){
-                    setError(""+error)
+                    setError(""+error.response.data.messages || ""+error)
                 }
             }
         });
@@ -96,7 +95,7 @@ const DepartmentsList = props => {
     return (
         <React.Fragment>
             {openModalDelete ? <Modal
-                                    acaoModal={deleteDepartment}
+                                    actionModal={deleteDepartment}
                                     closeModal={closeModal}
                                     dialogTitle={"Confirm"}
                                     dialogContentText={"Delete item?"} />  :""}
@@ -116,7 +115,8 @@ const DepartmentsList = props => {
                     <Table className={classes.table} aria-label="simple table">
                         <TableHead>
                             <TableRow>
-                                <TableCell>Nome</TableCell>
+                                <TableCell><strong>Name</strong></TableCell>
+                                <TableCell><strong>Description</strong></TableCell>
                                 <TableCell align="right"></TableCell>
                             </TableRow>
                         </TableHead>
@@ -125,19 +125,19 @@ const DepartmentsList = props => {
                             departments.length > 0
                             ?
                                 departments.map((department) => (
-                                <TableRow key={department.dados.id}>
-                                    <TableCell component="th" scope="row">{department.dados.nome}</TableCell>
-                                    <TableCell>{department.dados.data}</TableCell>
+                                <TableRow key={department.id}>
+                                    <TableCell component="th" scope="row">{department.name}</TableCell>
+                                    <TableCell component="th" scope="row">{department.description.substr(0, 120)}...</TableCell>
                                     <TableCell align="right">
                                         <Box component="span" m={1}>
-                                            <LinkWrapper props={{ 'to': `departments-details/${department.dados.id}`}}>
-                                                <Button variant="contained" className={classes.informacoes}>
+                                            <LinkWrapper props={{ 'to': `departments-details/${department.id}`}}>
+                                                <Button variant="contained" className={classes.info}>
                                                     <InfoIcon className={classes.actions_buttons}/>
                                                 </Button>
                                             </LinkWrapper>
                                         </Box>
                                         <Box component="span" m={1}>
-                                            <LinkWrapper props={{ 'to': `departments-edit/${department.dados.id}`}}>
+                                            <LinkWrapper props={{ 'to': `departments-edit/${department.id}`}}>
                                                 <Button variant="contained" color="primary">
                                                     <EditIcon className={classes.actions_buttons}/>
                                                 </Button>
@@ -149,7 +149,7 @@ const DepartmentsList = props => {
                                                 color="secondary"
                                                 onClick={() => {
                                                         setOpenModalDelete(true);
-                                                        setIdDepartmentDelete(department.dados.id);
+                                                        setIdDepartmentDelete(department.id);
                                                     }}>
                                                 <DeleteIcon className={classes.actions_buttons}/>
                                             </Button>

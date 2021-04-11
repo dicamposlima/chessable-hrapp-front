@@ -1,5 +1,5 @@
 import React from 'react';
-import {  useHistory, useParams} from "react-router-dom";
+import { useParams} from "react-router-dom";
 // material-ui
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -46,7 +46,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DepartmentsEdit = props => {
-    let history = useHistory();
     let { id } = useParams();
     const classes = useStyles();
     const [searchingData, setSearchingData] = React.useState(true);
@@ -64,7 +63,7 @@ const DepartmentsEdit = props => {
         form.validField(valor, name)
         setErrorMessages(form.errorMessages)
     }
-    const submitForm = event => {
+    const submitForm = event => {        
         event.preventDefault();
         setError("")
         form.validField(name, "name")
@@ -73,23 +72,22 @@ const DepartmentsEdit = props => {
         if(valid){
             setErrorMessages("")
         }        
-        setValido(form.valido)
-        if (form.valido) {
+        setValido(form.valid)
+        if (form.valid) {
             setSearchingData(true)
             setSearchingDataMensagem("Saving data...")
-            let dados = {
+            let data = {
                 "name": name,
                 "description": description,
             }
-            Departments.update(id, dados)
+            Departments.update(id, data)
                 .then((result) => {
                     setSearchingData(false)
-                    setSuccess(""+result.data.success)
-                    history.push(`/departments-list`)
+                    setSuccess(""+result.data.messages)
                 })
                 .catch((error) => {
                     setSearchingData(false)
-                    setError(""+error)
+                    setError(""+error.response.data.messages || ""+error)
                 });
         }
     };
@@ -102,14 +100,14 @@ const DepartmentsEdit = props => {
         Departments.details(id)
         .then((result) => {
             setSearchingData(false)
-            setName(result.data.evento.dados.name || "");
-            setDescription(result.data.evento.dados.description || "");
+            setName(result.data.department[0].name || "");
+            setDescription(result.data.department[0].description || "");
             setFields(DepartmentsEditValidationRules)
         })
         .catch((error) => {
             setSearchingData(false)
             if(error.hasOwnProperty("response")){
-                setError(""+error)
+                setError(""+error.response.data.messages || ""+error)
             }
         });
     }, [id, fields])
@@ -154,7 +152,7 @@ const DepartmentsEdit = props => {
                             <Grid item xs={12} md={12} lg={12}>
                             <TextField 
                                 value={description}
-                                onChange={(e) => setDescription(e.target.value.substr(0, 120))}
+                                onChange={(e) => setDescription(e.target.value)}
                                 color={errorMessages['description'] ? 'secondary' : 'primary'}
                                 helperText={<ErrorMessages errorMessages={errorMessages['description']} />}
                                 error={errorMessages['description'] ? true : false}

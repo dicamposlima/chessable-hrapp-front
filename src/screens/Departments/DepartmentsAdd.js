@@ -1,5 +1,4 @@
 import React from 'react';
-import { useHistory } from "react-router-dom";
 // material-ui
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -46,7 +45,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DepartmentsAdicionar = props => {
-    let history = useHistory();
     const classes = useStyles();
     const [searchingData, setSearchingData] = React.useState(false);
     const [searchingDataMensagem, setSearchingDataMensagem] = React.useState("Searching data...");
@@ -55,7 +53,7 @@ const DepartmentsAdicionar = props => {
     form = new FormValidation(DepartmentsAddValidationRules)
     const [success, setSuccess] = React.useState(null);
     const [erro, setError] = React.useState(null);
-    const [valido, setValido] = React.useState(true);
+    const [valid, setValido] = React.useState(true);
     const [fields, setFields] = React.useState([]);
     const [errorMessages, setErrorMessages] = React.useState(cloneDeep(ErrorMessagesInitialValues));
     const [name, setName] = React.useState("");
@@ -71,25 +69,26 @@ const DepartmentsAdicionar = props => {
         form.validField(name, "name")
         form.validField(description, "description")
         setErrorMessages(form.errorMessages)
-        setValido(form.valido)
-        if (form.valido) {
+        setValido(form.valid)
+        if (form.valid) {
+            setSuccess("")
+            setError("")
             setSearchingData(true)
             setSearchingDataMensagem("Saving data...")
-            let dados = {
+            let data = {
                 "name": name,
                 "description": description,
             }
-            Departments.adicionar(dados)
+            Departments.add(data)
                 .then((result) => {
                     setSearchingData(false)
-                    setSuccess(""+result.data.success)
+                    setSuccess(""+result.data.messages)
                     setName("");
                     setDescription("");
-                    history.push(`/departments-list`)
                 })
                 .catch((error) => {
                     setSearchingData(false)
-                    setError(""+error.data.error)
+                    setError(""+error.response.data.messages || ""+error)
                 });
         }
     };
@@ -141,7 +140,7 @@ const DepartmentsAdicionar = props => {
                             <Grid item xs={12} md={12} lg={12}>
                             <TextField 
                                 value={description}
-                                onChange={(e) => setDescription(e.target.value.substr(0, 120))}
+                                onChange={(e) => setDescription(e.target.value)}
                                 color={errorMessages['description'] ? 'secondary' : 'primary'}
                                 helperText={<ErrorMessages errorMessages={errorMessages['description']} />}
                                 error={errorMessages['description'] ? true : false}
@@ -169,7 +168,7 @@ const DepartmentsAdicionar = props => {
                                     type="submit"
                                     variant="contained"
                                     className={classes.btnSave}
-                                    disabled={!valido}>Save</Button>
+                                    disabled={!valid}>Save</Button>
                             </Box>
                         </Grid>
                     </Grid>

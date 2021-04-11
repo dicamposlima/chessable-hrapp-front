@@ -2,8 +2,7 @@ const DepartmentsAddValidationRules = {
     name: {
         validations: {
             required: true,
-            minLength: 2,
-            maxLength: 120,
+            maxLength: 255,
         },
         valid: false,
         label: "Name"
@@ -12,7 +11,6 @@ const DepartmentsAddValidationRules = {
         validations: {
             required: true,
             minLength: 2,
-            maxLength: 120,
         },
         valid: false,
         label: "Description"

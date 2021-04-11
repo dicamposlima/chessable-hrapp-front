@@ -12,6 +12,8 @@ import LayoutNavBar from '../../components/Layout/LayoutNavBar';
 import Header from '../../components/UI/Header/Header';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import InfoIcon from '@material-ui/icons/Info';
@@ -43,6 +45,7 @@ const EmployeesList = props => {
     const [searchingData, setSearchingData] = React.useState(false);
     const [error, setError] = React.useState(null);
     const [success, setSuccess] = React.useState(null);
+    const [showSalary, setShowSalary] = React.useState(false);
 
     // abrir modal para delete
     const [openModalDelete, setOpenModalDelete] = React.useState(false);
@@ -56,20 +59,19 @@ const EmployeesList = props => {
             Employees.delete(idEmployeeDelete)
                 .then((result) => {
                     setSearchingData(false)
-                    setSuccess(""+result.data.success)
+                    setSuccess(""+result.data.messages)
                     list()
                 })
                 .catch((error) => {
                     setSearchingData(false)
                     if(error.hasOwnProperty("response")){
-                        setError(""+error)
+                        setError(""+error.response.data.messages || ""+error)
                     }
                 });
-            
         }
     };
 
-   // employess list
+   // employees list
     const list = () => {
         setEmployees([])
         setSearchingData(true)
@@ -83,7 +85,7 @@ const EmployeesList = props => {
             setSearchingData(false)
             if(error.hasOwnProperty("response")){
                 if(!error.response){
-                    setError(""+error)
+                    setError(""+error.response.data.messages || ""+error)
                 }
             }
         });
@@ -97,7 +99,7 @@ const EmployeesList = props => {
     return (
         <React.Fragment>
             {openModalDelete ? <Modal
-                                    acaoModal={deleteEmployee}
+                                    actionModal={deleteEmployee}
                                     closeModal={closeModal}
                                     dialogTitle={"Confirm"}
                                     dialogContentText={"Delete item?"} />  :""}
@@ -117,12 +119,19 @@ const EmployeesList = props => {
                     <Table className={classes.table} aria-label="simple table">
                         <TableHead>
                             <TableRow>
-                                <TableCell>Name</TableCell>
-                                <TableCell>Position</TableCell>
-                                <TableCell>Hiring date</TableCell>
-                                <TableCell>Leaving Date</TableCell>
-                                <TableCell>Department</TableCell>
-                                <TableCell>Status</TableCell>
+                                <TableCell><strong>Name</strong></TableCell>
+                                <TableCell><strong>Position</strong></TableCell>
+                                <TableCell><strong>Hiring Date</strong></TableCell>
+                                <TableCell><strong>Department</strong></TableCell>
+                                <TableCell>
+                                    <strong>Salary</strong>
+                                    {showSalary
+                                    ?
+                                    <VisibilityOffIcon style={{ cursor: 'pointer' }} onClick={() => setShowSalary(!showSalary)}/>
+                                    :
+                                    <VisibilityIcon style={{ cursor: 'pointer' }} onClick={() => setShowSalary(!showSalary)}/>}
+                                    </TableCell>
+                                <TableCell><strong>Status</strong></TableCell>
                                 <TableCell align="right"></TableCell>
                             </TableRow>
                         </TableHead>
@@ -131,23 +140,23 @@ const EmployeesList = props => {
                             employees.length > 0
                             ?
                                 employees.map((employee) => (
-                                <TableRow key={employee.dados.id}>
-                                    <TableCell component="th" scope="row">{employee.dados.name}</TableCell>
-                                    <TableCell>{employee.dados.position}</TableCell>
-                                    <TableCell>{employee.dados.hiring_date}</TableCell>
-                                    <TableCell>{employee.dados.leaving_date}</TableCell>
-                                    <TableCell>{employee.department.name}</TableCell>
-                                    <TableCell>{EmployeesStatus[employee.dados.status]}</TableCell>
+                                <TableRow key={employee.id}>
+                                    <TableCell component="th" scope="row">{employee.name}</TableCell>
+                                    <TableCell>{employee.position}</TableCell>
+                                    <TableCell>{employee.hiring_date}</TableCell>
+                                    <TableCell>{employee.department_name}</TableCell>
+                                    <TableCell>{showSalary ? employee.salary : "--"}</TableCell>
+                                    <TableCell>{EmployeesStatus[employee.status]}</TableCell>
                                     <TableCell align="right">
                                         <Box component="span" m={1}>
-                                            <LinkWrapper props={{ 'to': `employees-details/${employee.dados.id}`}}>
+                                            <LinkWrapper props={{ 'to': `employees-details/${employee.id}`}}>
                                                 <Button variant="contained" className={classes.info}>
                                                     <InfoIcon className={classes.actions_buttons}/>
                                                 </Button>
                                             </LinkWrapper>
                                         </Box>
                                         <Box component="span" m={1}>
-                                            <LinkWrapper props={{ 'to': `employees-edit/${employee.dados.id}`}}>
+                                            <LinkWrapper props={{ 'to': `employees-edit/${employee.id}`}}>
                                                 <Button variant="contained" color="primary">
                                                     <EditIcon className={classes.actions_buttons}/>
                                                 </Button>
@@ -159,7 +168,7 @@ const EmployeesList = props => {
                                                 color="secondary"
                                                 onClick={() => {
                                                         setOpenModalDelete(true);
-                                                        setIdEmployeeDelete(employee.dados.id);
+                                                        setIdEmployeeDelete(employee.id);
                                                     }}>
                                                 <DeleteIcon className={classes.actions_buttons}/>
                                             </Button>

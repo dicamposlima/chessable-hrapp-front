@@ -10,7 +10,7 @@ const EmployeesEditValidationRules = {
         validations: {
             required: true,
             minLength: 2,
-            maxLength: 120,
+            maxLength: 255,
         },
         valid: false,
         label: "Name"
@@ -19,7 +19,7 @@ const EmployeesEditValidationRules = {
         validations: {
             required: true,
             minLength: 2,
-            maxLength: 120,
+            maxLength: 100,
         },
         valid: false,
         label: "Position"
@@ -27,8 +27,7 @@ const EmployeesEditValidationRules = {
     salary: {
         validations: {
             required: true,
-            minLength: 2,
-            maxLength: 120,
+            isNumeric: true
         },
         valid: false,
         label: "Salary"
@@ -36,20 +35,9 @@ const EmployeesEditValidationRules = {
     hiring_date: {
         validations: {
             required: true,
-            minLength: 6,
-            maxLength: 10,
         },
         valid: false,
         label: "Hiring date"
-    },
-    leaving_date: {
-        validations: {
-            required: true,
-            minLength: 6,
-            maxLength: 10,
-        },
-        valid: false,
-        label: "Leaving date"
     },
     status: {
         validations: {

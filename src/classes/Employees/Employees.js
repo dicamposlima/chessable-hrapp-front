@@ -4,23 +4,23 @@ import '../../axiosConfig'
 class Employees {
 
     static async list() {
-        return await axios.get(`employee`)
+        return await axios.get(`employees`)
     }
     
     static async add(data) {
-        return await axios.post(`employee/`, data)
+        return await axios.post(`employees/add`, data)
     }
     
     static async details(id) {
-        return await axios.get(`employee/${id}`)
+        return await axios.get(`employees/details/${id}`)
     }
     
     static async update(id, data) {
-        return await axios.put(`employee/${id}`, data)
+        return await axios.put(`employees/edit/${id}`, data)
     }
     
     static async delete(id) {
-        return await axios.delete(`employee/${id}`)
+        return await axios.delete(`employees/remove/${id}`)
     }
 }
 

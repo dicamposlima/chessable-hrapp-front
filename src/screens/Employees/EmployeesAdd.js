@@ -1,5 +1,4 @@
 import React from 'react';
-import { useHistory } from "react-router-dom";
 // material-ui
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -55,7 +54,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const EmployeesAdd = props => {
-    let history = useHistory();
     const classes = useStyles();
     const [searchingData, setSearchingData] = React.useState(false);
     const [searchingDataMessage, setSearchingDataMessage] = React.useState("Searching data...");
@@ -64,7 +62,7 @@ const EmployeesAdd = props => {
     form = new FormValidation(EmployeesAddValidationRules)
     const [success, setSuccess] = React.useState(null);
     const [erro, setError] = React.useState(null);
-    const [valido, setValido] = React.useState(true);
+    const [valid, setValido] = React.useState(true);
     const [fields, setFields] = React.useState([]);
     const [errorMessages, setErrorMessages] = React.useState(cloneDeep(ErrorMessagesInitialValues));
     const [departments, setDepartments] = React.useState([]);
@@ -88,31 +86,30 @@ const EmployeesAdd = props => {
         form.validField(salary, "salary");
         form.validField(hiring_date, "hiring_date");
         setErrorMessages(form.errorMessages)
-        setValido(form.valido)
-        if (form.valido) {
+        setValido(form.valid)
+        if (form.valid) {
             setSearchingData(true)
             setSearchingDataMessage("Saving data...")
-            let dados = {
+            let data = {
                 "id_department": id_department,
                 "name": name,
                 "position": position,
                 "salary": salary,
                 "hiring_date": hiring_date,
             }
-            Employees.add(dados)
+            Employees.add(data)
                 .then((result) => {
                     setSearchingData(false)
-                    setSuccess(""+result.data.success)
+                    setSuccess(""+result.data.messages)
                     setIdDepartment("");
                     setName("");
                     setPosition("");
                     setSalary("");
                     setHiringDate("");
-                    history.push(`/employees-list`)
                 })
                 .catch((error) => {
                     setSearchingData(false)
-                    setError(""+error.data.error)
+                    setError(""+error.response.data.messages || ""+error)
                 });
         }
     };
@@ -127,7 +124,7 @@ const EmployeesAdd = props => {
         .catch((error) => {
             setSearchingData(false)
             if(error.hasOwnProperty("response")){
-                setError(""+error)
+                setError(""+error.response.data.messages || ""+error)
             }
         });
     }, [])
@@ -238,6 +235,7 @@ const EmployeesAdd = props => {
                                 label="Hiring Date"
                                 type="date"
                                 required
+                                fullWidth
                                 className={classes.textField}
                                 InputLabelProps={{shrink: true,}}
                             />
@@ -270,7 +268,7 @@ const EmployeesAdd = props => {
                                     type="submit"
                                     variant="contained"
                                     className={classes.btnSave}
-                                    disabled={!valido}>Save</Button>
+                                    disabled={!valid}>Save</Button>
                             </Box>
                         </Grid>
                     </Grid>

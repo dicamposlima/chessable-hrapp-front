@@ -8,20 +8,20 @@ import Button from '@material-ui/core/Button';
 
 const Modal = props => {
     const [open, setOpen] = React.useState(true);
-    const cancelarAcao = () => {
+    const cancelAction = () => {
       setOpen(false);
-      props.fecharModal()
+      props.closeModal()
     };
     const confirmarAcao = () => {
       setOpen(false);
-      props.fecharModal()
-      props.acaoModal()
+      props.closeModal()
+      props.actionModal()
     };
     return (
         <React.Fragment>
           <Dialog
             open={open}
-            onClose={cancelarAcao}
+            onClose={cancelAction}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description">
             <DialogTitle id="alert-dialog-title">{props.dialogTitle}</DialogTitle>
@@ -31,11 +31,11 @@ const Modal = props => {
               </DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button onClick={cancelarAcao} color="primary">
-                Cancelar
+              <Button onClick={cancelAction} color="primary">
+                Cancel
               </Button>
               <Button onClick={confirmarAcao} color="primary" autoFocus>
-                Confirmar
+                Confirm
               </Button>
             </DialogActions>
           </Dialog>

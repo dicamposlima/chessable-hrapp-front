@@ -42,12 +42,11 @@ const EmployeesDetails = props => {
     const [searchingDataMessage, setSearchingDataMessage] = React.useState("Searching data...");
 
     const [erro, setError] = React.useState(null);
-    const [id_department, setIdDepartment] = React.useState("");
+    const [department_name, setDepartmentName] = React.useState("");
     const [name, setName] = React.useState("");
     const [position, setPosition] = React.useState("");
     const [salary, setSalary] = React.useState("");
     const [hiring_date, setHiringDate] = React.useState("");
-    const [leaving_date, setLeavingDate] = React.useState("");
     const [status, setStatus] = React.useState("");
 
 
@@ -58,18 +57,17 @@ const EmployeesDetails = props => {
         Employees.details(id)
         .then((result) => {
             setSearchingData(false)
-            setIdDepartment(result.data.employee.data.id_department || "");
-            setName(result.data.employee.data.name || "");
-            setPosition(result.data.employee.data.position || "");
-            setSalary(result.data.employee.data.salary || "");
-            setHiringDate(result.data.employee.data.hiring_date || "");
-            setLeavingDate(result.data.employee.data.leaving_date || "");
-            setStatus(result.data.employee.data.status || "");
+            setDepartmentName(result.data.employee[0].department_name || "");
+            setName(result.data.employee[0].name || "");
+            setPosition(result.data.employee[0].position || "");
+            setSalary(result.data.employee[0].salary || "");
+            setHiringDate(result.data.employee[0].hiring_date || "");
+            setStatus(result.data.employee[0].status || "");
         })
         .catch((error) => {
             setSearchingData(false)
             if(error.hasOwnProperty("response")){
-                setError(""+error)
+                setError(""+error.response.data.messages || ""+error)
             }
         });
     }, [id])
@@ -165,18 +163,6 @@ const EmployeesDetails = props => {
                                     InputLabelProps={{shrink: true,}}
                                 />
                                 </Grid>
-                                <Grid item xs={3} md={3} lg={3}>
-                                <TextField 
-                                    value={leaving_date}
-                                    id="leaving_date"
-                                    name="leaving_date"
-                                    label="Leaving Date"
-                                    type="leaving_date"
-                                    disabled
-                                    className={classes.textField}
-                                    InputLabelProps={{shrink: true,}}
-                                />
-                                </Grid>
                             </Grid>
                             <Grid container spacing={3}>
                                 <Grid item xs={6} md={6} lg={6}>
@@ -193,9 +179,9 @@ const EmployeesDetails = props => {
                             <Grid container spacing={3}>
                                 <Grid item xs={6} md={6} lg={6}>
                                     <TextField 
-                                        value={id_department}
-                                        id="id_department"
-                                        name="id_department"
+                                        value={department_name}
+                                        id="department_name"
+                                        name="department_name"
                                         label="Department"
                                         fullWidth
                                         disabled />

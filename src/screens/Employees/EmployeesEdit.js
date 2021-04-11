@@ -1,5 +1,5 @@
 import React from 'react';
-import {  useHistory, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 // material-ui
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
@@ -46,7 +46,6 @@ const ErrorMessagesInitialValues = [{
     "position": null,
     "salary": null,
     "hiring_date": null,
-    "leaving_date": null,
     "status": null,
 }]
 
@@ -59,7 +58,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const EmployeesEdit = props => {
-    let history = useHistory();
     let { id } = useParams();
     const classes = useStyles();
     const [searchingData, setSearchingData] = React.useState(true);
@@ -68,7 +66,7 @@ const EmployeesEdit = props => {
     // Form
     const [success, setSuccess] = React.useState(null);
     const [erro, setError] = React.useState(null);
-    const [valido, setValido] = React.useState(true);
+    const [valid, setValido] = React.useState(true);
     const [fields, setFields] = React.useState([]);
     const [errorMessages, setErrorMessages] = React.useState(cloneDeep(ErrorMessagesInitialValues));
     const [departments, setDepartments] = React.useState([]);
@@ -77,7 +75,6 @@ const EmployeesEdit = props => {
     const [position, setPosition] = React.useState("");
     const [salary, setSalary] = React.useState("");
     const [hiring_date, setHiringDate] = React.useState("");
-    const [leaving_date, setLeavingDate] = React.useState("");
     const [status, setStatus] = React.useState("");
 
     const validField = (valor, nome) => {
@@ -92,31 +89,28 @@ const EmployeesEdit = props => {
         form.validField(position, "position");
         form.validField(salary, "salary");
         form.validField(hiring_date, "hiring_date");
-        form.validField(leaving_date, "leaving_date");
         form.validField(status, "status");
         setErrorMessages(form.errorMessages)
-        setValido(form.valido)
-        if (form.valido) {
+        setValido(form.valid)
+        if (form.valid) {
             setSearchingData(true)
             setSearchingDataMessage("Saving data...")
-            let dados = {
+            let data = {
                 "id_department": id_department,
                 "name": name,
                 "position": position,
                 "salary": salary,
                 "hiring_date": hiring_date,
-                "leaving_date": leaving_date,
                 "status": status,
             }
-            Employees.update(id, dados)
+            Employees.update(id, data)
                 .then((result) => {
                     setSearchingData(false)
-                    setSuccess(""+result.data.success)
-                    history.push(`/employees-list`)
+                    setSuccess(""+result.data.messages)
                 })
                 .catch((error) => {
                     setSearchingData(false)
-                    setError(""+error)
+                    setError(""+error.response.data.messages || ""+error)
                 });
         }
     };
@@ -128,22 +122,21 @@ const EmployeesEdit = props => {
         Employees.details(id)
         .then((result) => {
             setSearchingData(false)
-            setIdDepartment(result.data.employee.data.id_department || "");
-            setName(result.data.employee.data.name || "");
-            setPosition(result.data.employee.data.position || "");
-            setSalary(result.data.employee.data.salary || "");
-            setHiringDate(result.data.employee.data.hiring_date || "");
-            setLeavingDate(result.data.employee.data.leaving_date || "");
-            setStatus(result.data.employee.data.status || "");
+            setIdDepartment(result.data.employee[0].id_department || "");
+            setName(result.data.employee[0].name || "");
+            setPosition(result.data.employee[0].position || "");
+            setSalary(result.data.employee[0].salary || "");
+            setHiringDate(result.data.employee[0].hiring_date || "");
+            setStatus(result.data.employee[0].status || "");
             setFields(EmployeesEditValidationRules)
         })
         .catch((error) => {
             setSearchingData(false)
             if(error.hasOwnProperty("response")){
-                setError(""+error)
+                setError(""+error.response.data.messages || ""+error)
             }
         });
-    }, [id, fields])
+    }, [])
 
     // departments select list
     React.useEffect(() => {
@@ -155,7 +148,7 @@ const EmployeesEdit = props => {
         .catch((error) => {
             setSearchingData(false)
             if(error.hasOwnProperty("response")){
-                setError(""+error)
+                setError(""+error.response.data.messages || ""+error)
             }
         });
     }, [])
@@ -193,6 +186,7 @@ const EmployeesEdit = props => {
                                         className={classes.inputLabel}>Department</InputLabel>
                                     <Select
                                         value={id_department}
+                                        defaultValue=""
                                         onChange={(e) => setIdDepartment(e.target.value)}
                                         onClick={(e) => validField(e.target.value, e.target.name)}
                                         name="id_department"
@@ -249,6 +243,7 @@ const EmployeesEdit = props => {
                         <Grid container spacing={3}>
                             <Grid item xs={3} md={3} lg={3}>
                             <TextField 
+                                    fullWidth
                                 value={hiring_date}
                                 onChange={(e) => setHiringDate(e.target.value)}
                                 color={errorMessages['hiring_date'] ? 'secondary' : 'primary'}
@@ -264,26 +259,10 @@ const EmployeesEdit = props => {
                                 InputLabelProps={{shrink: true,}}
                             />
                             </Grid>
-                            <Grid item xs={3} md={3} lg={3}>
-                            <TextField 
-                                value={leaving_date}
-                                onChange={(e) => setLeavingDate(e.target.value)}
-                                color={errorMessages['leaving_date'] ? 'secondary' : 'primary'}
-                                helperText={<ErrorMessages errorMessages={errorMessages['leaving_date']} />}
-                                error={errorMessages['leaving_date'] ? true : false}
-                                onInput={(e) => validField(e.target.value, e.target.name)}
-                                id="leaving_date"
-                                name="leaving_date"
-                                label="Leaving Date"
-                                type="date"
-                                required
-                                className={classes.textField}
-                                InputLabelProps={{shrink: true,}}
-                            />
-                            </Grid>
                             <Grid item xs={2} md={2} lg={2}>
                                 <TextField 
                                     value={salary}
+                                    fullWidth
                                     onChange={(e) => setSalary(e.target.value)}
                                     color={errorMessages['salary'] ? 'secondary' : 'primary'}
                                     helperText={<ErrorMessages errorMessages={errorMessages['salary']} />}
@@ -295,9 +274,7 @@ const EmployeesEdit = props => {
                                     fullWidth
                                     type="number"/>
                             </Grid>
-                        </Grid>
-                        <Grid container spacing={3}>
-                            <Grid item xs={12} md={12} lg={12}>
+                            <Grid item xs={12} md={7} lg={7}>
                                 <FormControl
                                     required
                                     fullWidth
@@ -308,6 +285,7 @@ const EmployeesEdit = props => {
                                         className={classes.inputLabel}>Status</InputLabel>
                                     <Select
                                         value={status}
+                                        defaultValue=""
                                         onChange={(e) => setStatus(e.target.value)}
                                         onClick={(e) => validField(e.target.value, e.target.name)}
                                         name="status"
@@ -337,7 +315,7 @@ const EmployeesEdit = props => {
                                     type="submit"
                                     variant="contained"
                                     className={classes.btnSave}
-                                    disabled={!valido}>Save</Button>
+                                    disabled={!valid}>Save</Button>
                             </Box>
                         </Grid>
                     </Grid>

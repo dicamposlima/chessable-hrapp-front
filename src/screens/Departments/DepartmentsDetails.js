@@ -51,13 +51,13 @@ const DepartmentsDetails = props => {
         Departments.details(id)
         .then((result) => {
             setSearchingData(false)
-            setName(result.data.department.data.name || "");
-            setDescription(result.data.department.data.description || "");
+            setName(result.data.department[0].name || "");
+            setDescription(result.data.department[0].description || "");
         })
         .catch((error) => {
             setSearchingData(false)
             if(error.hasOwnProperty("response")){
-                setError(""+error)
+                setError(""+error.response.data.messages || ""+error)
             }
         });
     }, [id])

@@ -22,6 +22,7 @@ import BusinessIcon from '@material-ui/icons/Business';
 // customizados
 import LinkWrapper from '../UI/Links/LinkWrapper';
 import LoadingBackdrop from '../UI/Backdrop/LoadingBackdrop';
+import Logo from "../../assets/images/logo_new.svg";
 
 const drawerWidth = 240;
 
@@ -108,6 +109,7 @@ const LayoutNavBar = props => {
             <LoadingBackdrop loading={props.loading} mensagem={props.loadingMessage}>
                 <CssBaseline />
                 <AppBar
+                    style={{ background: '#034fdf' }}
                     position="fixed"
                     className={clsx(classes.appBar, {
                         [classes.appBarShift]: drawerOpen,
@@ -124,7 +126,7 @@ const LayoutNavBar = props => {
                             <MenuIcon />
                         </IconButton>
                         <Typography variant="h6" noWrap className={classes.title}>
-                            HR App
+                            <img src={Logo} alt="Chessable" /> - HR App
                         </Typography>
                     </Toolbar>
                 </AppBar>

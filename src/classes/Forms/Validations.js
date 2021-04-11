@@ -69,7 +69,7 @@ class FormValidation {
         let valid = value !== '' && this._valid;
         if (!valid) {
             this._valid = false
-            this._errorMessages[field] = this.formatMessage('{field} é obrigatório.', label)
+            this._errorMessages[field] = this.formatMessage('{field} is required.', label)
         }
     }
 
@@ -78,7 +78,7 @@ class FormValidation {
             let valid = value.length >= rules.validations.minLength && this._valid
             if (!valid) {
                 this._valid = false
-                this._errorMessages[field] = this.formatMessage("{field} precisa de no mínimo {minLength} caracteres.", label, rules.validations.minLength)
+                this._errorMessages[field] = this.formatMessage("{field} needs to have at least {minLength} characters.", label, rules.validations.minLength)
             }
         }
     }
@@ -88,18 +88,7 @@ class FormValidation {
             let valid = value.length <= rules.validations.maxLength && this._valid
             if (!valid) {
                 this._valid = false
-                this._errorMessages[field] = this.formatMessage("{field} aceita no máximo {maxLength} caracteres.", label, rules.validations.maxLength)
-            }
-        }
-    }
-
-    isEmail(value, rules, field, label) {
-        if(value){
-            const pattern = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
-            let valid = pattern.test(value) && this._valid
-            if (!valid) {
-                this._valid = false
-                this._errorMessages[field] = this.formatMessage("{field} está inválido.", label)
+                this._errorMessages[field] = this.formatMessage("{field} is not allowed to have more than {maxLength} characters.", label, rules.validations.maxLength)
             }
         }
     }
@@ -110,55 +99,10 @@ class FormValidation {
             let valid = pattern.test(value) && this._valid
             if (!valid) {
                 this._valid = false
-                this._errorMessages[field] = this.formatMessage("{field} deve ser numérico.", label)
+                this._errorMessages[field] = this.formatMessage("{field} has to be numeric.", label)
             }
         }
     }
-
-    isString(value, rules, field, label) {
-        if(value){
-            const pattern = /[a-zA-Z\s]+$/;
-            let valid = pattern.test(value) && this._valid
-            if (!valid) {
-                this._valid = false
-                this._errorMessages[field] = this.formatMessage("{field} não pode conter números.", label)
-            }
-        }
-    }
-
-    moreThan(value, rules, field, label) {
-        if(value){
-            let valid = value >= rules.validations.moreThan && this._valid
-            if (!valid) {
-                this._valid = false
-                this._errorMessages[field] = this.formatMessage("{field} precisa ser maior do que {moreThan}.", label, rules.validations.moreThan)
-            }
-        }
-    }
-
-    lessThan(value, rules, field, label) {
-        if(value){
-            let valid = value <= rules.validations.lessThan && this._valid
-            if (!valid) {
-                this._valid = false
-                this._errorMessages[field] = this.formatMessage("{field} precisa ser menor do que {lessThan}.", label, rules.validations.lessThan)
-            }
-        }
-    }
-
-    isEqualTo(value, rules, field, label) {
-        if(value){
-            let equal_field = document.getElementById(rules.validations.isEqualTo)
-            if (equal_field.value) {
-                let valid = value === equal_field.value && this._valid
-                if (!valid) {
-                    this._valid = false
-                    this._errorMessages[field] = this.formatMessage("{field} não é igual a {isEqualTo}.", label, rules.validations.isEqualTo)
-                }
-            }
-        }
-    }
-
 }
 
 export default FormValidation
