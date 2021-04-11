@@ -3,8 +3,14 @@ import '../../axiosConfig'
 
 class Employees {
 
-    static async list() {
-        return await axios.get(`employees`)
+    static page_limt = 10;
+    
+    static async list(page, search_value) {
+        let url = `employees?offset=${page}`;
+        if(search_value){
+            url = url + `&filter=${search_value}`
+        }
+        return await axios.get(url)
     }
     
     static async add(data) {

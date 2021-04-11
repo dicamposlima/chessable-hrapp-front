@@ -3,8 +3,17 @@ import '../../axiosConfig'
 
 class Departments {
 
-    static async list() {
-        return await axios.get(`departments`)
+    static page_limt = 10;
+
+    static async list(page, search_value) {
+        let url = `departments`;
+        if(page){
+            url = `?offset=${page}`;     
+            if(search_value){
+                url = url + `&filter=${search_value}`
+            }
+        } 
+        return await axios.get(url)
     }
 
     static async listHighestSalary() {

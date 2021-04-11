@@ -12,6 +12,8 @@ import LayoutNavBar from '../../components/Layout/LayoutNavBar';
 import Header from '../../components/UI/Header/Header';
 import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import EditIcon from '@material-ui/icons/Edit';
@@ -29,6 +31,7 @@ import AlertsError from '../../components/UI/Alerts/Error';
 import AlertsSuccess from '../../components/UI/Alerts/Success';
 import Employees from '../../classes/Employees/Employees'
 import EmployeesStatus from '../../metadata/EmployeesStatus'
+import Search from '../../components/Search/Search'
 // styles
 import headerStyle from '../../styles/header'
 import buttonsStyle from '../../styles/buttons'
@@ -39,17 +42,42 @@ const useStyles = makeStyles((theme) => ({
     ...headerStyle(),
     ...buttonsStyle(theme, green, grey)
 }));
-  
+
 const EmployeesList = props => {
     const classes = useStyles();
+    const [offset, setOffset] = React.useState(0);
+    const [pageShowed, setPageShowed] = React.useState(1);
+    const [pageTotal, setPageTotal] = React.useState(0);
     const [searchingData, setSearchingData] = React.useState(false);
     const [error, setError] = React.useState(null);
     const [success, setSuccess] = React.useState(null);
     const [showSalary, setShowSalary] = React.useState(false);
-
-    // abrir modal para delete
+    const [employees, setEmployees] = React.useState([]);
+    const [employeesTotal, setEmployeesTotal] = React.useState(0);
     const [openModalDelete, setOpenModalDelete] = React.useState(false);
     const [idEmployeeDelete, setIdEmployeeDelete] = React.useState(null);
+    const [search_value, setSearchValue] = React.useState(null);
+
+    const search = (value) => {
+        setSearchValue(value)
+    }
+    
+    const setPageBack = () => {
+        setOffset(offset > Employees.page_limt ? offset-Employees.page_limt : 0)
+        setPaginationDescription()
+    }
+
+    const setPageForward = () => {
+        setOffset(pageShowed < pageTotal ? offset+Employees.page_limt : offset)
+        setPaginationDescription()
+    }
+
+    const setPaginationDescription = () => {
+        setPageShowed(Math.ceil(offset/Employees.page_limt+1))
+        setPageTotal(Math.ceil(employeesTotal/Employees.page_limt))
+    }
+
+    // abrir modal para delete
     const closeModal = () => {
         setOpenModalDelete(false)
     };
@@ -74,11 +102,13 @@ const EmployeesList = props => {
    // employees list
     const list = () => {
         setEmployees([])
+        setEmployeesTotal(0)
         setSearchingData(true)
         setError("")
-        Employees.list()
+        Employees.list(offset, search_value)
         .then((result) => {
-            setEmployees(result.data.employees)
+            setEmployeesTotal(result.data.total)
+            setEmployees(result.data.employees || [])
             setSearchingData(false)
         })
         .catch((error) => {
@@ -91,10 +121,14 @@ const EmployeesList = props => {
         });
         
     };
-    const [employees, setEmployees] = React.useState([]);
+        
     React.useEffect(() => {
-        list()        
-    }, [])
+        list()
+    }, [offset, search_value])
+
+    React.useEffect(() => {
+        setPaginationDescription()
+    }, [employees])
 
     return (
         <React.Fragment>
@@ -115,10 +149,17 @@ const EmployeesList = props => {
                 <CustomDivider />
                 {error ? <AlertsError>{error}</AlertsError>: ""}
                 {success ? <AlertsSuccess>{success}</AlertsSuccess>: ""}
+                <Search search={search}/>
+                <div elevation={3} style={{ display: "flex", justifyContent: "flex-end", padding: "5px 0px" }}>
+                    <Typography variant="subtitle2" gutterBottom style={{paddingRight: "15px"}} >{pageShowed} - {pageTotal}</Typography>
+                    <ArrowBackIosIcon fontSize={"small"} style={{ cursor: 'pointer' }} onClick={() => setPageBack()} />
+                    <ArrowForwardIosIcon fontSize={"small"} style={{ cursor: 'pointer' }} onClick={() => setPageForward()} />
+                </div>
                 <TableContainer component={Paper}>
                     <Table className={classes.table} aria-label="simple table">
                         <TableHead>
                             <TableRow>
+                                <TableCell><strong>ID</strong></TableCell>
                                 <TableCell><strong>Name</strong></TableCell>
                                 <TableCell><strong>Position</strong></TableCell>
                                 <TableCell><strong>Hiring Date</strong></TableCell>
@@ -141,9 +182,16 @@ const EmployeesList = props => {
                             ?
                                 employees.map((employee) => (
                                 <TableRow key={employee.id}>
+                                    <TableCell component="th" scope="row">{employee.id}</TableCell>
                                     <TableCell component="th" scope="row">{employee.name}</TableCell>
                                     <TableCell>{employee.position}</TableCell>
-                                    <TableCell>{employee.hiring_date}</TableCell>
+                                    <TableCell>
+                                        {employee.hiring_date.split('-')[2]}
+                                        {"."}
+                                        {employee.hiring_date.split('-')[1]}
+                                        {"."}
+                                        {employee.hiring_date.split('-')[0]}
+                                    </TableCell>
                                     <TableCell>{employee.department_name}</TableCell>
                                     <TableCell>{showSalary ? employee.salary : "--"}</TableCell>
                                     <TableCell>{EmployeesStatus[employee.status]}</TableCell>
@@ -193,6 +241,11 @@ const EmployeesList = props => {
                         </TableBody>
                     </Table>
                 </TableContainer>
+                <div elevation={3} style={{ display: "flex", justifyContent: "flex-end", padding: "5px 0px" }}>
+                    <Typography variant="subtitle2" gutterBottom style={{paddingRight: "15px"}} >{pageShowed} - {pageTotal}</Typography>
+                    <ArrowBackIosIcon fontSize={"small"} style={{ cursor: 'pointer' }} onClick={() => setPageBack()} />
+                    <ArrowForwardIosIcon fontSize={"small"} style={{ cursor: 'pointer' }} onClick={() => setPageForward()} />
+                </div>
             </LayoutNavBar>
         </React.Fragment >
     );

@@ -76,7 +76,7 @@ const DepartmentsListHighestSalary = props => {
                             departments.map((department) => (
                             <TableRow key={department.id}>
                                 <TableCell component="th" scope="row">{department.name}</TableCell>
-                                <TableCell component="th" scope="row" align={'right'}>{department.highest_salary}</TableCell>
+                                <TableCell component="th" scope="row" align={'right'}>{department.highest_salary || "0.00"}</TableCell>
                             </TableRow>
                             ))
                         :

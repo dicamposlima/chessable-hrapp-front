@@ -8,6 +8,8 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import LayoutNavBar from '../../components/Layout/LayoutNavBar';
 import Header from '../../components/UI/Header/Header';
 import Button from '@material-ui/core/Button';
@@ -26,6 +28,7 @@ import Modal from '../../components/UI/Modal/Modal';
 import AlertsError from '../../components/UI/Alerts/Error';
 import AlertsSuccess from '../../components/UI/Alerts/Success';
 import Departments from '../../classes/Departments/Departments'
+import Search from '../../components/Search/Search'
 // styles
 import headerStyle from '../../styles/header'
 import buttonsStyle from '../../styles/buttons'
@@ -36,16 +39,41 @@ const useStyles = makeStyles((theme) => ({
     ...headerStyle(),
     ...buttonsStyle(theme, green, grey)
 }));
-  
+
 const DepartmentsList = props => {
     const classes = useStyles();
+    const [offset, setOffset] = React.useState(0);
+    const [pageShowed, setPageShowed] = React.useState(1);
+    const [pageTotal, setPageTotal] = React.useState(0);
     const [searchingData, setSearchingData] = React.useState(false);
     const [erro, setError] = React.useState(null);
     const [success, setSuccess] = React.useState(null);
-
-    // open modal to delete
+    const [departments, setDepartments] = React.useState([]);
+    const [departmentsTotal, setEmployeesTotal] = React.useState(0);
     const [openModalDelete, setOpenModalDelete] = React.useState(false);
     const [idDepartmentDelete, setIdDepartmentDelete] = React.useState(null);
+    const [search_value, setSearchValue] = React.useState(null);
+
+    const search = (value) => {
+        setSearchValue(value)
+    }
+
+    const setPageBack = () => {
+        setOffset(offset > Departments.page_limt ? offset-Departments.page_limt : 0)
+        setPaginationDescription()
+    }
+
+    const setPageForward = () => {
+        setOffset(pageShowed < Departments.pageTotal ? offset+Departments.page_limt : offset)
+        setPaginationDescription()
+    }
+
+    const setPaginationDescription = () => {
+        setPageShowed(Math.ceil(offset/Departments.page_limt+1))
+        setPageTotal(Math.ceil(departmentsTotal/Departments.page_limt))
+    }
+
+    // open modal to delete
     const closeModal = () => {
         setOpenModalDelete(false)
     };
@@ -72,8 +100,9 @@ const DepartmentsList = props => {
         setDepartments([])
         setSearchingData(true)
         setError("")
-        Departments.list()
+        Departments.list(offset, search_value)
         .then((result) => {
+            setEmployeesTotal(result.data.total)
             setDepartments(result.data.departments || [])
             setSearchingData(false)
         })
@@ -87,10 +116,14 @@ const DepartmentsList = props => {
         });
         
     };
-    const [departments, setDepartments] = React.useState([]);
+
     React.useEffect(() => {
         list()        
-    }, [])
+    }, [offset, search_value])
+
+    React.useEffect(() => {
+        setPaginationDescription()
+    }, [departments])
 
     return (
         <React.Fragment>
@@ -111,10 +144,17 @@ const DepartmentsList = props => {
                 <CustomDivider />
                 {erro ? <AlertsError>{erro}</AlertsError>: ""}
                 {success ? <AlertsSuccess>{success}</AlertsSuccess>: ""}
+                <Search search={search}/>
+                <div elevation={3} style={{ display: "flex", justifyContent: "flex-end", padding: "5px 0px" }}>
+                    <Typography variant="subtitle2" gutterBottom style={{paddingRight: "15px"}} >{pageShowed} - {pageTotal}</Typography>
+                    <ArrowBackIosIcon fontSize={"small"} style={{ cursor: 'pointer' }} onClick={() => setPageBack()} />
+                    <ArrowForwardIosIcon fontSize={"small"} style={{ cursor: 'pointer' }} onClick={() => setPageForward()} />
+                </div>
                 <TableContainer component={Paper}>
                     <Table className={classes.table} aria-label="simple table">
                         <TableHead>
                             <TableRow>
+                                <TableCell><strong>ID</strong></TableCell>
                                 <TableCell><strong>Name</strong></TableCell>
                                 <TableCell><strong>Description</strong></TableCell>
                                 <TableCell align="right"></TableCell>
@@ -126,8 +166,9 @@ const DepartmentsList = props => {
                             ?
                                 departments.map((department) => (
                                 <TableRow key={department.id}>
+                                    <TableCell component="th" scope="row">{department.id}</TableCell>
                                     <TableCell component="th" scope="row">{department.name}</TableCell>
-                                    <TableCell component="th" scope="row">{department.description.substr(0, 120)}...</TableCell>
+                                    <TableCell component="th" scope="row">{department.description.substr(0, 80)}...</TableCell>
                                     <TableCell align="right">
                                         <Box component="span" m={1}>
                                             <LinkWrapper props={{ 'to': `departments-details/${department.id}`}}>
@@ -174,6 +215,11 @@ const DepartmentsList = props => {
                         </TableBody>
                     </Table>
                 </TableContainer>
+                <div elevation={3} style={{ display: "flex", justifyContent: "flex-end", padding: "5px 0px" }}>
+                    <Typography variant="subtitle2" gutterBottom style={{paddingRight: "15px"}} >{pageShowed} - {pageTotal}</Typography>
+                    <ArrowBackIosIcon fontSize={"small"} style={{ cursor: 'pointer' }} onClick={() => setPageBack()} />
+                    <ArrowForwardIosIcon fontSize={"small"} style={{ cursor: 'pointer' }} onClick={() => setPageForward()} />
+                </div>
             </LayoutNavBar>
         </React.Fragment >
     );
