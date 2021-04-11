@@ -57,6 +57,14 @@ const EmployeesList = props => {
     const [openModalDelete, setOpenModalDelete] = React.useState(false);
     const [idEmployeeDelete, setIdEmployeeDelete] = React.useState(null);
     const [search_value, setSearchValue] = React.useState(null);
+    const [order, setListColumnOrder] = React.useState({'field':null, 'dir':null});
+    
+    const setListOrder = (field) => {
+        setListColumnOrder({
+            'field':field,
+            'dir': !order.dir || order.dir === 'DESC' ? 'ASC' : 'DESC'
+        })
+    }
 
     const search = (value) => {
         setSearchValue(value)
@@ -105,7 +113,7 @@ const EmployeesList = props => {
         setEmployeesTotal(0)
         setSearchingData(true)
         setError("")
-        Employees.list(offset, search_value)
+        Employees.list(offset, search_value, order)
         .then((result) => {
             setEmployeesTotal(result.data.total)
             setEmployees(result.data.employees || [])
@@ -124,7 +132,7 @@ const EmployeesList = props => {
         
     React.useEffect(() => {
         list()
-    }, [offset, search_value])
+    }, [offset, search_value, order])
 
     React.useEffect(() => {
         setPaginationDescription()
@@ -159,20 +167,20 @@ const EmployeesList = props => {
                     <Table className={classes.table} aria-label="simple table">
                         <TableHead>
                             <TableRow>
-                                <TableCell><strong>ID</strong></TableCell>
-                                <TableCell><strong>Name</strong></TableCell>
-                                <TableCell><strong>Position</strong></TableCell>
-                                <TableCell><strong>Hiring Date</strong></TableCell>
-                                <TableCell><strong>Department</strong></TableCell>
-                                <TableCell>
-                                    <strong>Salary</strong>
+                                <TableCell style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => setListOrder('id')}><strong>ID</strong></TableCell>
+                                <TableCell style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => setListOrder('name')}><strong>Name</strong></TableCell>
+                                <TableCell style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => setListOrder('position')}><strong>Position</strong></TableCell>
+                                <TableCell style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => setListOrder('hiring_date')}><strong>Hiring Date</strong></TableCell>
+                                <TableCell style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => setListOrder('department_name')}><strong>Department</strong></TableCell>
+                                <TableCell style={{ cursor: 'pointer', textDecoration: 'underline' }}>
+                                    <strong  onClick={() => setListOrder('salary')}>Salary</strong>
                                     {showSalary
                                     ?
                                     <VisibilityOffIcon style={{ cursor: 'pointer' }} onClick={() => setShowSalary(!showSalary)}/>
                                     :
                                     <VisibilityIcon style={{ cursor: 'pointer' }} onClick={() => setShowSalary(!showSalary)}/>}
                                     </TableCell>
-                                <TableCell><strong>Status</strong></TableCell>
+                                <TableCell style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => setListOrder('status')}><strong>Status</strong></TableCell>
                                 <TableCell align="right"></TableCell>
                             </TableRow>
                         </TableHead>

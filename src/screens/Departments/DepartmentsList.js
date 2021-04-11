@@ -53,6 +53,14 @@ const DepartmentsList = props => {
     const [openModalDelete, setOpenModalDelete] = React.useState(false);
     const [idDepartmentDelete, setIdDepartmentDelete] = React.useState(null);
     const [search_value, setSearchValue] = React.useState(null);
+    const [order, setListColumnOrder] = React.useState({'field':null, 'dir':null});
+    
+    const setListOrder = (field) => {
+        setListColumnOrder({
+            'field':field,
+            'dir': !order.dir || order.dir === 'DESC' ? 'ASC' : 'DESC'
+        })
+    }
 
     const search = (value) => {
         setSearchValue(value)
@@ -100,7 +108,7 @@ const DepartmentsList = props => {
         setDepartments([])
         setSearchingData(true)
         setError("")
-        Departments.list(offset, search_value)
+        Departments.list(offset, search_value, order)
         .then((result) => {
             setEmployeesTotal(result.data.total)
             setDepartments(result.data.departments || [])
@@ -119,7 +127,7 @@ const DepartmentsList = props => {
 
     React.useEffect(() => {
         list()        
-    }, [offset, search_value])
+    }, [offset, search_value, order])
 
     React.useEffect(() => {
         setPaginationDescription()
@@ -154,9 +162,9 @@ const DepartmentsList = props => {
                     <Table className={classes.table} aria-label="simple table">
                         <TableHead>
                             <TableRow>
-                                <TableCell><strong>ID</strong></TableCell>
-                                <TableCell><strong>Name</strong></TableCell>
-                                <TableCell><strong>Description</strong></TableCell>
+                                <TableCell style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => setListOrder('id')}><strong>ID</strong></TableCell>
+                                <TableCell style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => setListOrder('name')}><strong>Name</strong></TableCell>
+                                <TableCell style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => setListOrder('description')}><strong>Description</strong></TableCell>
                                 <TableCell align="right"></TableCell>
                             </TableRow>
                         </TableHead>

@@ -10,6 +10,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import { green, grey } from '@material-ui/core/colors';
 import Box from '@material-ui/core/Box';
+import CircularProgress from '@material-ui/core/CircularProgress';
 // custom
 import AlertsError from '../../components/UI/Alerts/Error';
 import Departments from '../../classes/Departments/Departments'
@@ -83,7 +84,7 @@ const DepartmentsListHighestSalary = props => {
                         searchingData ?
                         <TableRow key={0}>
                             <TableCell>
-                                <Typography variant="subtitle2" gutterBottom></Typography>
+                                <CircularProgress color="inherit" />
                             </TableCell>
                         </TableRow>
                             : 

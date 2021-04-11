@@ -32,7 +32,6 @@ export default function Search(props) {
   return (
     <Paper component="form" className={classes.root}>
       <InputBase
-        value={search_value}
         className={classes.input}
         placeholder="Search..."
         inputProps={{ 'aria-label': 'search...' }}
