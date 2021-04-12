@@ -6,9 +6,11 @@ class Departments {
     static page_limt = 10;
 
     static async list(page, search_value, order) {
-        return await axios.get(
-            `departments?offset=${page ? page : "" }&filter=${search_value ? search_value : "" }&order_field=${order.field ? order.field : "" }&order_dir=${order.dir ? order.dir : "" }`
-        )
+        let url = `departments?offset=${page ? page : "" }&filter=${search_value ? search_value : "" }`;
+        if(order){
+            url = `${url}&order_field=${order.field != null ? order.field : ""}&order_dir=${order.dir != null ? order.dir : ""}`;
+        }
+        return await axios.get(url)
     }
 
     static async listHighestSalary() {
