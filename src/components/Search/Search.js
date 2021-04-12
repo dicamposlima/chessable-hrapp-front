@@ -30,6 +30,7 @@ export default function Search(props) {
   const [search_value, setSearchValue] = React.useState(null);
 
   return (
+    <React.Fragment>
     <Paper component="form" className={classes.root}>
       <InputBase
         className={classes.input}
@@ -40,6 +41,7 @@ export default function Search(props) {
       <IconButton className={classes.iconButton} aria-label="search" onClick={() => props.search(search_value)} >
         <SearchIcon/>
       </IconButton>
-    </Paper>
+	</Paper>
+    </React.Fragment>
   );
 }

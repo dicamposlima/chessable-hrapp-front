@@ -158,6 +158,7 @@ const EmployeesList = props => {
                 {error ? <AlertsError>{error}</AlertsError>: ""}
                 {success ? <AlertsSuccess>{success}</AlertsSuccess>: ""}
                 <Search search={search}/>
+	            <div>Filtered by: {search_value}</div>
                 <div elevation={3} style={{ display: "flex", justifyContent: "flex-end", padding: "5px 0px" }}>
                     <Typography variant="subtitle2" gutterBottom style={{paddingRight: "15px"}} >{pageShowed} - {pageTotal}</Typography>
                     <ArrowBackIosIcon fontSize={"small"} style={{ cursor: 'pointer' }} onClick={() => setPageBack()} />
