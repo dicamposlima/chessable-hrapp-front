@@ -6,21 +6,9 @@ class Employees {
     static page_limt = 10;
     
     static async list(page, search_value, order) {
-        let url = `employees`;
-        if(page){
-            url = `?offset=${page}`;     
-            if(search_value){
-                url = url + `&filter=${search_value}`
-            }
-            if(order.field && order.dir){
-                url = url + `&order_field=${order.field}&order_dir=${order.dir}`
-            }
-        }  else {
-            if(order.field && order.dir){
-                url = url + `?order_field=${order.field}&order_dir=${order.dir}`
-            }
-        }
-        return await axios.get(url)
+        return await axios.get(
+            `employees?offset=${page ? page : "" }&filter=${search_value ? search_value : "" }&order_field=${order.field ? order.field : "" }&order_dir=${order.dir ? order.dir : "" }`
+        )
     }
     
     static async add(data) {
